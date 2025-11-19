@@ -116,8 +116,9 @@ This server implements several security measures:
 ### Project Structure
 
 ```
+src/
 ├── index.ts          # Main server implementation
-├── db-adapters.ts     # Database adapter implementations
+└── db-adapters.ts     # Database adapter implementations
 ├── package.json       # Dependencies and scripts
 ├── tsconfig.json      # TypeScript configuration
 └── README.md          # This file
