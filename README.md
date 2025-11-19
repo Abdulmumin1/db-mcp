@@ -117,24 +117,33 @@ This server implements several security measures:
 
 ```
 src/
-├── index.ts          # Main server implementation
-└── db-adapters.ts     # Database adapter implementations
-├── package.json       # Dependencies and scripts
-├── tsconfig.json      # TypeScript configuration
-└── README.md          # This file
+├── index.ts              # Main server implementation
+└── adapters/
+    ├── index.ts          # Adapter exports and factory
+    ├── base.ts           # Abstract adapter and validation
+    ├── postgres.ts       # PostgreSQL adapter
+    └── mysql.ts          # MySQL adapter
+├── package.json           # Dependencies and scripts
+├── tsconfig.json          # TypeScript configuration
+└── README.md              # This file
 ```
 
 ### Adding New Database Adapters
 
 To add support for a new database type:
 
-1. Create a new adapter class extending `DBAdapter`
-2. Implement the required methods: `connect()` and `executeReadOnlyQuery()`
-3. Add the adapter to the `adapterFactory` object
-4. Update the dependencies in `package.json` if needed
+1. Create a new file in `src/adapters/` (e.g., `sqlite.ts`)
+2. Create a new adapter class extending `DBAdapter` from `./base.js`
+3. Implement the required methods: `connect()` and `executeReadOnlyQuery()`
+4. Export the class from the new file
+5. Add the adapter to the `adapterFactory` object in `src/adapters/index.ts`
+6. Update the dependencies in `package.json` if needed
 
 Example:
 ```typescript
+// src/adapters/sqlite.ts
+import { DBAdapter } from './base.js';
+
 export class SqliteAdapter extends DBAdapter {
   async connect() {
     // Implementation
@@ -144,8 +153,12 @@ export class SqliteAdapter extends DBAdapter {
     // Implementation
   }
 }
+```
 
-// Add to factory
+```typescript
+// src/adapters/index.ts
+import { SqliteAdapter } from './sqlite.js';
+
 export const adapterFactory: Record<string, new (details: ConnectionDetails) => DBAdapter> = {
   'postgres': PostgresAdapter,
   'mysql': MySqlAdapter,
